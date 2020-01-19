@@ -1,0 +1,41 @@
+version: '3.4'
+
+services:
+  api:
+    build: ./build
+    image: ${SERVICE_NAME}
+    container_name: ${SERVICE_NAME}
+    volumes:
+      - .:/thumbs-trial-crud
+    ports:
+      - "${CRUD_PORT}:${CRUD_PORT}"
+    env_file:
+      - .env
+    environment:
+      - SERVICE_TAGS=traefik.enable=true,traefik.frontend.entryPoints=http,traefik.frontend.rule=Host:${SERVICE_NAME}.localhost         
+    command: sh -c 'cd conf-migrations/ && npx migrate-mongo up && cd ../; yarn start:dev'
+    depends_on: 
+      - db      
+    networks:
+      - back_end      
+  db:
+    image: mongo:latest
+    container_name: ${THUMBS_TRIAL_CRUD_DB_URL}
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+      - MONGO_INITDB_ROOT_USERNAME=${THUMBS_TRIAL_CRUD_DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${THUMBS_TRIAL_CRUD_DB_PASS}
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - ${DB_PORT}:27017
+    networks:
+      - back_end
+
+volumes:
+  gosrc:
+  mongo_data:
+networks:
+  back_end:
+    external: true

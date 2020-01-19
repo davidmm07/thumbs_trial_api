@@ -1,0 +1,24 @@
+type Trial {
+  id: Int!
+  Name: String
+}
+type User {
+  id: Int!
+  Name: String
+}
+
+type Vote {
+  thumbsup: Int
+  thumbsdown: Int
+  trial: Trial!
+  votedby: User
+}
+
+""" type Query {
+ votes: [Vote]!
+ description: String
+}
+
+type Mutation {
+  createVote(description: String!): Vote!
+} """
